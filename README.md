@@ -1,4 +1,4 @@
-# Recommender system - Decision tree
+# 📳 Recommender system - Decision tree
 
 This project was developped whithin a Data Mining course.
 
@@ -6,40 +6,37 @@ This project was developped whithin a Data Mining course.
 
 - Implementation of a [Recommender system](https://en.wikipedia.org/wiki/Recommender_system) in Python
 
+
 The goal of this project is to recommend images based on the preferences
 of the user, while ensuring that all the tasks related to data acquisition, annotation,
 analysis, and visualization are automated.
 
 The main tasks of the project are:
 
-1.  Data Collection
-2.  Labeling and Annotation
-3.  Data Analyses
-4.  Data Visualization
-5.  Recommendation System
-6.  Tests
-7.  Report
+1.  💻 Data Collection
+2.  🖱 Data filtering
+3.  📔 Labeling and Annotation
+4.  💽 Data Analyses
+5.  🖥 Data Visualization
+6.  🖱 Recommendation System
+7.  ✅ Tests
+8.  📓 Report
 
 ## Data Collection
 
-![Architecture](../../images/Project-Architecture.png "Architecture")
+<p align="center">
+<img src="https://user-images.githubusercontent.com/69010419/197755060-a22dffd2-5ae9-4c0c-8612-7d8539827d74.png" width="400">
+</p>
 
-You have to collect and download a set of images. You have the following
-tasks to program, automating the process as much as possible:
+We worked with kaggle, an open-licensed images plateform where we chose our dataset from, it containes pictures of cats, dogs and monkeys as well as some information in a separate csv file.
 
-1.  Create a folder called *images*.
-2.  Download open-licensed images to the folder *images* (minimum 100
-    images).
-3.  Save metadata of every image like image size, image format (.jpeg,
-    .png, etc.), image orientation (landscape, portrait, square, etc.),
-    creation date, camera model, etc. in one or more JSON files. You can
-    make use of the [Exif](https://en.wikipedia.org/wiki/Exif)
-    information present in the image files.
+The dataset contains 2 folders:
+➔ Train ⇒ Contains 1309 éléments.
+➔ Test.
 
-For this task, you should look for sources having additional information
-like the tags, categories, etc.
+We then worked on collecting the basic metadata of every image ans stored it.
 
-## Labeling and Annotation
+## Data filtering
 
 In this task, you may need to label, annotate and save additional
 information about every image. You may analyze the images using
@@ -52,120 +49,105 @@ E.g., color names, \#cat, \#flower, \#sunflower, rose etc. How are you
 planning to process the user tags? Is it possible to automate this
 process?
 
+Before starting our program, we first filtered the relevant information for us, mainly:
+
+➔ The dataset contained “.xml” files that we didn't have any use for.
+➔ The dataset contained duplicates: nwe used the
+.drop_duplicates() method on the .csv file before converting it to the json and creating the
+dataframe.
+➔ After the cleanup, we had 469 images to treat.
+
+## Labeling and Annotation
+
+We went through 2 main steps: transformationm and lebeling & annotation.
+
+We at first had 8 key information on every image:
+
+    ➔ filename.
+    ➔ width.
+    ➔ height.
+    ➔ class (“cats”, “dogs”, “monkeys”).
+    ➔ xmin, ymin, xmax, ymax (bounding box coordinates).
+    
+We decided to keep these elements:
+
+    ➔ width
+    ➔ height
+    ➔ class
+
+And we decided to treat the rest of the elements to get new information out of them: 
+
+    ● Transformation: The animal's size inside the image.
+    
+In order to do that, we made use of the bounding box coordinates :
+
+    ■ tailleX = xmax - xmin.
+    ■ tailleY = ymax - ymin.
+    
+We then used a label encoder to define 3 categories :
+
+    ■ Object size < 30% image size: small ⇒ 0.
+    ■ 70% image size > Object size > 30% image size: médium ⇒ 1.
+    ■ Object size > 70% image size: large ⇒2.
+    
+    LabelEncoder imported from sklearn.preprocessing
+
+The second main information we tried to extract is: 
+
+    ● Traitement: Dominating color.
+    
+In order to do that, we used a clustering algorithm:
+
+    ■ Mini Batch K-means, with 3 clusters.
+
+○ we imported conversion functions
+from webcolors, mainly css3_hex_to_names and
+hex_to_rgb to make the colors understadable.
+
+The final dataframe contained:
+
+| width | height | class | tailleX | tailleY | couleur1 |
+
+
+
 ## Data Analyses
 
-Ask the user to select some images and add tags. For every user, you are
-now ready to build a user-preference profile, based on this selection.
-You may collect the following information manually, but the objective of
-this task is to obtain them using the selected images in an automated
-manner:
+In order to simulate a user liking or not a picture we generated a "likes" column that either contains the value "favorite" (1) or "nor favorite" (0) that we inserted in our resultframe. The data was randomly generated.
 
-1.  Favorite colors
-2.  Favorite image orientation
-3.  Favorite image sizes (thumbnail images, large images, medium-size
-    images, etc.)
-4.  Favorite tags
-5.  \...
+We then built our user-preference profile.
 
-Now, with your knowledge of different types of classifiers and
-clustering algorithms, what more information will you add for every
-image?
-
-Your next objective is to analyze the user information and their
-favorite images. How did you create random users? How many users did you
-create? What information did you store for every user? What types of
-analyses did you perform?
 
 ## Data Visualization
 
-In this task, your goal is to visualize the different characteristics of
-all the downloaded images.
+We tried to visualize the most relevent information, so we implemented:
 
-1.  The available number of images for every year
-2.  The available number of images for different types: image size,
-    image orientation, camera models, etc.
-3.  Color characteristics
-
-The users may also like to visualize the above information related to
-their favorite images. In this task, you must also add functionality to
-let the users visualize information related to their own user profile.
+    ➔ Un plot.bar to visualize the “width” and “height” (image size):
+    ➔ Un plot.bar to visualize “tailleX” et “tailleY” (object size):
+    ➔ Un plot.bar to visualize the dominant color.
+    
+![image](https://user-images.githubusercontent.com/69010419/197754960-ef60c61c-9ffe-4c63-8de9-8a779f31e150.png)
+    
+    ➔ In this example the user seems to have a preference towards pictures with a medium width and a medium height.
+    ➔ He seems to like objects with a medium width (tailleX) and objects with a medium to large height (tailleY).
+    ➔ The user seems to like objects with the color code 12.
+    
+    
 
 ## Recommendation System
 
-Are you now ready to recommend images to a user? In this task, your goal
-is to build the recommendation system. Which approach did you decide to
-take? Collaborative filtering, content-based, or a hybrid approach? For
-every user, are you now in a position to build a user-preference
-profile? What type of information did you use for building a user
-profile? What\'s missing? What are the limitations of your proposed
-approach?
+In order to satisfy the original goal of the project, we decided to work with decision trees.
 
-## Tests
+It's a supervised learning method, non paramétrique used for classification and régression. The goal is to create a model that can predict the value or a target variable taking into consideration the rules of simple decisions deducted fron the iven characteristics.
+The deeper the tree is, the more complex decision making rules are, and the fitter the model.
 
-Your next task is to develop and run different tests on your proposed
-system. Are different functions functional? How did you test your
-project? How are you verifying that your recommender system is working?
+We imported DecisionTreeClassifier avec ces deux lignes :
 
-## Report
+     ➔ from sklearn import tree
+     ➔ Xxx = tree.DecisionTreeClassifier()
+     
+We then applied this classifier on out data
 
-Your final task is to prepare a 4-page Project report (French or
-English) in PDF format detailing the following:
-
--   The goal of your project
--   Data sources of your images and license.
--   Size of your data.
--   Information that you decided to store for each image.
--   Information concerning user preferences
--   Data mining and/or machine learning models that you used along with
-    the metrics obtained.
--   Self-evaluation of your work.
--   Remarks concerning the practical sessions, exercises, and scope for
-    improvement.
--   Conclusion
-
-**Note**: Please do not add any program (or code) in this report.
+    ➔ xxxx = xxxx.fit()
 
 
-## Submission
 
-
--   Please **do not** submit your image.
--   Rename your project report as Name1\_Name2\_\[Name3\].pdf, where
-    Name1, Name2, etc. are your names.
--   Add your project report in your project folder.
--   Compress and rename your project work as
-    Name1\_Name2\_\[Name3\].zip, where Name1, Name2 are your names.
--   Submit your **project work** online.
-
-
-### Evaluation
-
-
-The criteria for the project evaluation is given below:
-
-1.  Data Collection
-    1. Automated approaches to data collection
-    2. Use of open-licensed images
-    3. Storage and management of images and the associated metadata
-2.  Labeling and Annotation
-    1. Automated approaches to labeling
-    2. Storage and management of labels and annotations of images
-    3. Use of classification and clustering algorithms
-3.  Data Analyses
-    1. Types of analyses used
-    2. Use of Pandas and Scikit-learn
-    3. Use of data mining algorithms
-4.  Data Visualization
-    1. Types of visualization techniques used
-    2. Use of matplotlib
-5.  Recommendation System
-    1. Storage and management of user preferences and user-profile
-    2. Use of recommendation algorithms
-6.  Tests
-    1. Presence of functional tests
-    2. Presence of user tests
-7.  Report
-    1. Clarity of presentation
-    2. Presence of a clear introduction and conclusion, architecture
-        diagrams, a summary of different tasks achieved, and limitations
-    3. Bibliography
