@@ -4,7 +4,7 @@ This project was developped whithin a Data Mining course.
 
 ## Goals
 
-- Implementation of a [Recommender system](https://en.wikipedia.org/wiki/Recommender_system) in Python
+- Implementation of a [Recommender system](https://en.wikipedia.org/wiki/Recommender_system) in Python.
 
 
 The goal of this project is to recommend images based on the preferences
